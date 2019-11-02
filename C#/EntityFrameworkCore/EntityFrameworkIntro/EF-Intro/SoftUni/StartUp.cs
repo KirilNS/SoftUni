@@ -12,10 +12,46 @@ namespace SoftUni
         {
             using (SoftUniContext context = new SoftUniContext())
             {
-                var result = GetEmployee147(context);
+                var result = GetDepartmentsWithMoreThan5Employees(context);
 
                 Console.WriteLine(result);
             }
+        }
+
+        public static string GetDepartmentsWithMoreThan5Employees(SoftUniContext context)
+        {
+            var departments = context.Departments
+                .Where(d => d.Employees.Count > 5)
+                .Select(d => new
+                {
+                    ManagerName = d.Manager.FirstName + " " + d.Manager.LastName,
+                    Name=d.Name,
+                    EmployeesNames = d.Employees
+                    .Select(e => new
+                    {
+                        FirstName = e.FirstName,
+                        LastName = e.LastName,
+                        JobTitle = e.JobTitle
+                    })
+                    .OrderBy(e => e.FirstName)
+                    .ThenBy(e => e.LastName)
+                    .ToList()
+                })
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var department in departments)
+            {
+                sb.AppendLine($"{department.Name} – {department.ManagerName}");
+
+                foreach (var employee in department.EmployeesNames)
+                {
+                    sb.AppendLine($"{employee.FirstName} {employee.LastName} - {employee.JobTitle}");
+                }
+            }
+
+            return sb.ToString();
         }
 
         public static string GetEmployee147(SoftUniContext context)
