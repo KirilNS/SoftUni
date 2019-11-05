@@ -48,6 +48,10 @@ namespace P03_SalesDatabase.Data
             modelBuilder.Entity<Product>()
                 .Property(p => p.Quantity)
                 .IsRequired();
+            modelBuilder.Entity<Product>()
+                .Property(p => p.Description)
+                .HasMaxLength(250)
+                .HasDefaultValue("No description");
 
             modelBuilder.Entity<Store>()
                 .Property(s => s.Name)
@@ -58,7 +62,11 @@ namespace P03_SalesDatabase.Data
             modelBuilder.Entity<Sale>()
                 .Property(s => s.Date)
                 .IsRequired();
-                
+            modelBuilder.Entity<Sale>()
+                .Property(s => s.Date)
+                .HasDefaultValueSql("getdate()");
+
+
         }
     }
 }
