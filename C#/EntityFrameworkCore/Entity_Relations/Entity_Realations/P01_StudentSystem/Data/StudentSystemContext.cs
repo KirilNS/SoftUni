@@ -8,6 +8,16 @@ namespace P01_StudentSystem.Data
 {
     public class StudentSystemContext:DbContext
     {
+        public StudentSystemContext()
+        {
+
+        }
+
+        public StudentSystemContext(DbContextOptions options)
+            : base(options)
+        {
+
+        }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Homework> HomeworkSubmissions { get; set; }
         public DbSet<Resource> Resources { get; set; }
