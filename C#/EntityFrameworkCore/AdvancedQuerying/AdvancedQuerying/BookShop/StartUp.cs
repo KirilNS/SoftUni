@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BookShop.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace BookShop
 {
@@ -6,7 +8,11 @@ namespace BookShop
     {
         static void Main(string[] args)
         {
-            
+            using (var db=new BookShopContext())
+            {
+                db.Database.EnsureDeleted();
+                db.Database.EnsureCreated();
+            }
         }
     }
 }

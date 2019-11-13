@@ -9,7 +9,7 @@ namespace P03_SalesDatabase
         {
             using (var db=new SalesContext())
             {
-                
+                db.Database.EnsureCreated();
             }
         }
     }
