@@ -1,24 +1,25 @@
-﻿using BookShop.Data;
-using BookShop.Data.Models.Enums;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Text;
-
-namespace BookShop
+﻿namespace BookShop
 {
+    using BookShop.Models.Enums;
+    using Data;
+    using Initializer;
+    using System;
+    using System.Linq;
+    using System.Text;
+
     public class StartUp
     {
-        static void Main(string[] args)
+        public static void Main()
         {
-            using (var db=new BookShopContext())
+            using (var db = new BookShopContext())
             {
+                DbInitializer.ResetDatabase(db);
+
                 string command = Console.ReadLine();
 
                 var result = GetBooksByAgeRestriction(db, command);
 
                 Console.WriteLine(result);
-                
             }
         }
 
