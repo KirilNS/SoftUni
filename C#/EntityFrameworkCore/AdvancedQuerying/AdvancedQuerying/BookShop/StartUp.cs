@@ -4,6 +4,7 @@
     using Data;
     using Initializer;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Text;
 
@@ -15,9 +16,9 @@
             {
                 DbInitializer.ResetDatabase(db);
 
-                int input =int.Parse( Console.ReadLine());
+                string input = Console.ReadLine();
 
-                var result = GetBooksNotReleasedIn(db,input);
+                var result = GetBooksByCategory(db,input);
 
                 Console.WriteLine(result);
             }
@@ -104,6 +105,41 @@
 
             return sb.ToString().TrimEnd();
 
+        }
+        public static string GetBooksByCategory(BookShopContext context, string input)
+        {
+
+            List<string> items = input
+                .Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+
+            List<string> booksTitles = new List<string>();
+
+            foreach (var item in items)
+            {
+                var books = context.Books
+                    .Where(b => b.BookCategories
+                    .Any(c => c.Category.Name.ToLower() == item.ToLower()))
+                    .Select(b => new
+                    {
+                        b.Title
+                    })
+                    .ToList();
+
+                foreach (var book in books)
+                {
+                    booksTitles.Add(book.Title);
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var title in booksTitles.OrderBy(x => x))
+            {
+                sb.AppendLine(title);
+            }
+
+            return sb.ToString().TrimEnd();
         }
     }
 }
