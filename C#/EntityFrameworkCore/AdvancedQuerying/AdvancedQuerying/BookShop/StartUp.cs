@@ -15,9 +15,9 @@
             {
                 DbInitializer.ResetDatabase(db);
 
-                
+                int input =int.Parse( Console.ReadLine());
 
-                var result = GetBooksByPrice(db);
+                var result = GetBooksNotReleasedIn(db,input);
 
                 Console.WriteLine(result);
             }
@@ -78,6 +78,28 @@
             foreach (var item in books)
             {
                 sb.AppendLine($"{item.Title} - ${item.Price:F2}");
+            }
+
+            return sb.ToString().TrimEnd();
+
+        }
+        public static string GetBooksNotReleasedIn(BookShopContext context, int year)
+        {
+            var books = context.Books
+                .Where(x => x.ReleaseDate.Value.Year != year)
+                .Select(x => new
+                {
+                    x.BookId,
+                    x.Title
+                })
+                .OrderBy(x => x.BookId)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var item in books)
+            {
+                sb.AppendLine($"{item.Title}");
             }
 
             return sb.ToString().TrimEnd();
