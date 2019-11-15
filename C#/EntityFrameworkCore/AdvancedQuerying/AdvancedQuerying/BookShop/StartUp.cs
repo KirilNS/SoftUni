@@ -18,7 +18,7 @@
 
                 string input = Console.ReadLine();
 
-                var result = GetBooksReleasedBefore(db,input);
+                var result = GetAuthorNamesEndingIn(db,input);
 
                 Console.WriteLine(result);
             }
@@ -167,6 +167,25 @@
 
             return sb.ToString().TrimEnd();
         }
+        public static string GetAuthorNamesEndingIn(BookShopContext context, string input)
+        {
+            var authors = context.Authors
+                .Where(a => a.FirstName.EndsWith(input))
+                .Select(a => new
+                {
+                    FullName = a.FirstName + " " + a.LastName
+                })
+                .OrderBy(a => a.FullName)
+                .ToList();
 
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var author in authors)
+            {
+                sb.AppendLine(author.FullName);
+            }
+
+            return sb.ToString().TrimEnd();
+        }
     }
 }
