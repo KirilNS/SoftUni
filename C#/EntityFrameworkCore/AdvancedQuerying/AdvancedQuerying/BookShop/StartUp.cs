@@ -16,9 +16,9 @@
             {
                 DbInitializer.ResetDatabase(db);
 
-                string input = Console.ReadLine();
+                int input = int.Parse(Console.ReadLine());
 
-                var result = GetBooksByAuthor(db,input);
+                var result = CountBooks(db,input);
 
                 Console.WriteLine(result);
             }
@@ -229,5 +229,10 @@
 
             return sb.ToString().TrimEnd();
         }
+        public static int CountBooks(BookShopContext context, int lengthCheck)
+        {
+            return context.Books.Where(b => b.Title.Length > lengthCheck).Count();
+        }
+
     }
 }
