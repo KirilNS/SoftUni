@@ -36,7 +36,7 @@
         {
             if (!ModelState.IsValid)
             {
-
+                return RedirectToAction("Error", "Home");
             }
 
             var employee = this.mapper.Map<Employee>(model);

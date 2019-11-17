@@ -4,8 +4,9 @@
     using FastFood.Web.ViewModels.Categories;
     using FastFood.Web.ViewModels.Employees;
     using FastFood.Web.ViewModels.Items;
+    using FastFood.Web.ViewModels.Orders;
     using Models;
-
+    using System.Globalization;
     using ViewModels.Positions;
 
     public class FastFoodProfile : Profile
@@ -42,9 +43,19 @@
             this.CreateMap<Item, ItemsAllViewModels>()
                 .ForMember(x=>x.Category,y=>y.MapFrom(x=>x.Category.Name));
 
-            
-                
-                
+            //Orders
+            this.CreateMap<CreateOrderInputModel, Order>();
+
+
+            this.CreateMap<Order, OrderAllViewModel>()
+                .ForMember(x => x.OrderId, y => y.MapFrom(x => x.Id))
+                .ForMember(x => x.Employee, y => y.MapFrom(x => x.Employee.Name))
+                .ForMember(x=>x.DateTime,y=>y.MapFrom(x=>x.DateTime.ToString("dd-MM-yyyy HH:mm",
+                CultureInfo.InvariantCulture)));
+
+
+
+
         }
     }
 }
