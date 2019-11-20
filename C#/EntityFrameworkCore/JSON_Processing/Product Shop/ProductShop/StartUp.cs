@@ -15,9 +15,9 @@ namespace ProductShop
 
             using (var db = new ProductShopContext())
             {
-                var inputJson = File.ReadAllText("./../../../Datasets/users.json");
+                var inputJson = File.ReadAllText("./../../../Datasets/products.json");
 
-                var result = ImportUsers(db, inputJson);
+                var result = ImportCategories(db, inputJson);
 
                 Console.WriteLine(result);
             }
@@ -32,6 +32,26 @@ namespace ProductShop
             context.SaveChanges();
 
             return $"Successfully imported {users.Length}";
+        }
+        public static string ImportProducts(ProductShopContext context, string inputJson)
+        {
+            var products = JsonConvert.DeserializeObject<Product[]>(inputJson);
+
+            context.AddRange(products);
+            context.SaveChanges();
+
+            return $"Successfully imported {products.Length}";
+        }
+        public static string ImportCategories(ProductShopContext context, string inputJson)
+        {
+            var categories = JsonConvert.DeserializeObject<Category[]>(inputJson)
+                .Where(x=>x.Name!=null)
+                .ToArray();
+
+            context.AddRange(categories);
+            context.SaveChanges();
+
+            return $"Successfully imported {categories.Length}";
         }
     }
 }
