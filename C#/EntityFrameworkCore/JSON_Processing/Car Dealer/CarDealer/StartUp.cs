@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using AutoMapper;
@@ -16,12 +17,10 @@ namespace CarDealer
         {
             using (var db=new CarDealerContext())
             {
-
-                var sales = File.ReadAllText($"./../../../Datasets/sales.json");
-
-                string result = ImportSales(db, sales);
-
-                Console.WriteLine(result);
+                string path = $@"./../../../..toyota-cars.json";
+                var result = GetCarsFromMakeToyota(db);
+                File.WriteAllText(path, result);
+                
             }
         }
 
@@ -95,6 +94,41 @@ namespace CarDealer
             context.SaveChanges();
 
             return $"Successfully imported {sales.Length}.";
+        }
+        public static string GetOrderedCustomers(CarDealerContext context)
+        {
+            var customers = context.Customers
+                .OrderBy(x => x.BirthDate)
+                .ThenBy(x => x.IsYoungDriver)
+                .Select(x => new
+                {
+                    Name = $"{x.Name}",
+                    BirthDate = x.BirthDate.ToString(@"dd/MM/yyyy",CultureInfo.InvariantCulture),
+                    IsYoungDriver = x.IsYoungDriver
+                })
+                .ToList();
+
+            var result = JsonConvert.SerializeObject(customers,Formatting.Indented);
+
+            return result;
+        }
+        public static string GetCarsFromMakeToyota(CarDealerContext context)
+        {
+            var cars = context.Cars
+                .Where(x => x.Make == "Toyota")
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Make,
+                    x.Model,
+                    x.TravelledDistance
+
+                })
+                .OrderBy(x => x.Model)
+                .ThenByDescending(x => x.TravelledDistance);
+
+            return JsonConvert.SerializeObject(cars, Formatting.Indented);
+
         }
     }
 }
