@@ -16,8 +16,8 @@ namespace ProductShop
             using (var db = new ProductShopContext())
             {
                 
-                string products = GetCategoriesByProductsCount(db);
-                File.WriteAllText("./../../../categories-by-products.json", products);
+                string products = GetUsersWithProducts(db);
+                File.WriteAllText("./../../../users-and-products.json", products);
             }
 
         }
@@ -120,5 +120,46 @@ namespace ProductShop
 
             return json;
         }
+        public static string GetUsersWithProducts(ProductShopContext context)
+        {
+            var users = context.Users
+                .Where(u => u.ProductsSold.Any(p => p.Buyer != null))
+                .OrderByDescending(p => p.ProductsSold.Count(ps => ps.Buyer != null))
+                .Select(u => new 
+                {
+                    
+                    LastName = u.LastName,
+                    Age = u.Age,
+                    SoldProducts = new 
+                    {
+                        Count = u.ProductsSold.Count(p => p.Buyer != null),
+                        Products = u.ProductsSold
+                        .Where(p => p.Buyer != null)
+                        .Select(p => new 
+                        {
+                            Name = p.Name,
+                            Price = p.Price
+                        })
+                        .ToList()
+                    }
+                })
+                .ToList();
+
+            var result = new 
+            {
+                UsersCount = users.Count(),
+                Users = users
+            };
+
+            var json = JsonConvert.SerializeObject(result,
+                Formatting.Indented,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+
+            return json;
+        }
     }
 }
+ 
