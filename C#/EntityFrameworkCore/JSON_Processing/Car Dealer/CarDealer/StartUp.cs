@@ -17,8 +17,8 @@ namespace CarDealer
         {
             using (var db=new CarDealerContext())
             {
-                string path = $@"./../../../..toyota-cars.json";
-                var result = GetCarsFromMakeToyota(db);
+                string path = $@"./../../../..cars-and-parts.json";
+                var result = GetCarsWithTheirListOfParts(db);
                 File.WriteAllText(path, result);
                 
             }
@@ -129,6 +129,39 @@ namespace CarDealer
 
             return JsonConvert.SerializeObject(cars, Formatting.Indented);
 
+        }
+        public static string GetLocalSuppliers(CarDealerContext context)
+        {
+            var suppliers = context.Suppliers
+                .Where(x => x.IsImporter == false)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    PartsCount = x.Parts.Count()
+                }).ToList();
+
+            return JsonConvert.SerializeObject(suppliers, Formatting.Indented);
+        }
+        public static string GetCarsWithTheirListOfParts(CarDealerContext context)
+        {
+            var cars = context.Cars
+                .Select(x => new
+                {
+                    car = new
+                    {
+                        x.Make,
+                        x.Model,
+                        TravelledDistance = x.TravelledDistance
+                    },
+                    parts = x.PartCars.Select(p => new
+                    {
+                        Name = p.Part.Name,
+                        Price = $"{p.Part.Price}"
+                    }).ToList()
+                }).ToList();
+
+            return JsonConvert.SerializeObject(cars, Formatting.Indented);
         }
     }
 }
