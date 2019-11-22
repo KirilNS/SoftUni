@@ -17,8 +17,8 @@ namespace CarDealer
         {
             using (var db=new CarDealerContext())
             {
-                string path = $@"./../../../..cars-and-parts.json";
-                var result = GetCarsWithTheirListOfParts(db);
+                string path = $@"./../../../..customers-total-sales.json";
+                var result = GetTotalSalesByCustomer(db);
                 File.WriteAllText(path, result);
                 
             }
@@ -162,6 +162,24 @@ namespace CarDealer
                 }).ToList();
 
             return JsonConvert.SerializeObject(cars, Formatting.Indented);
+        }
+        public static string GetTotalSalesByCustomer(CarDealerContext context)
+        {
+            var customers = context.Customers
+                .Where(c => c.Sales.Count() >= 1)
+                .Select(c => new 
+                {
+                    FullName = c.Name,
+                    BoughtCars = c.Sales.Count(),
+                    SpentMoney = c.Sales.Sum(s => s.Car.PartCars.Sum(p => p.Part.Price))
+                })
+                .OrderByDescending(m => m.SpentMoney)
+                .ThenByDescending(c => c.BoughtCars)
+                .ToList();
+
+            var json = JsonConvert.SerializeObject(customers, Formatting.Indented);
+
+            return json;
         }
     }
 }
