@@ -16,8 +16,8 @@ namespace ProductShop
             using (var db = new ProductShopContext())
             {
                 
-                string products = GetProductsInRange(db);
-                File.WriteAllText("./../../../products-in-range.json", products);
+                string products = GetCategoriesByProductsCount(db);
+                File.WriteAllText("./../../../categories-by-products.json", products);
             }
 
         }
@@ -70,11 +70,55 @@ namespace ProductShop
                     price = x.Price,
                     seller = x.Seller.FirstName + " " + x.Seller.LastName
                 })
-                .OrderBy(x=>x.price);
+                .OrderBy(x=>x.price)
+                .ToList();
 
             string productInRange = JsonConvert.SerializeObject(products,Formatting.Indented);
 
             return productInRange;
+        }
+        public static string GetSoldProducts(ProductShopContext context)
+        {
+            var users = context.Users
+                .Where(x => x.ProductsSold.Any(ps => ps.Buyer != null))
+                .OrderBy(x => x.LastName)
+                .ThenBy(x => x.FirstName)
+                .Select(x => new
+                {
+                    firstName = x.FirstName,
+                    lastName = x.LastName,
+                    soldProducts = x.ProductsSold
+                    .Select(ps => new
+                    {
+                        name = ps.Name,
+                        price = ps.Price,
+                        buyerFirstName = ps.Buyer.FirstName,
+                        buyerLastName = ps.Buyer.LastName
+                    })
+                }).ToList();
+
+            string soldProducts = JsonConvert.SerializeObject(users, Formatting.Indented);
+
+            return soldProducts;
+                
+        }
+        public static string GetCategoriesByProductsCount(ProductShopContext context)
+        {
+            var categories = context.Categories
+                .OrderByDescending(c => c.CategoryProducts.Count)
+                .Select(c => new
+                {
+                    category = c.Name,
+                    productsCount = c.CategoryProducts.Count,
+                    averagePrice = $@"{c.CategoryProducts
+                    .Sum(p => p.Product.Price) / c.CategoryProducts.Count():F2}",
+                    totalRevenue = $"{c.CategoryProducts.Sum(p => p.Product.Price):F2}"
+                })
+                .ToList();
+
+            var json = JsonConvert.SerializeObject(categories, Formatting.Indented);
+
+            return json;
         }
     }
 }
