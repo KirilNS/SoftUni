@@ -5,6 +5,7 @@ using ProductShop.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace ProductShop
@@ -20,9 +21,9 @@ namespace ProductShop
 
             using (var db = new ProductShopContext())
             {
-                var xmlToImport = File.ReadAllText($"../../../Datasets/categories.xml");
+                var xmlToImport = File.ReadAllText($"../../../Datasets/categories-products.xml");
 
-                Console.WriteLine(ImportCategories(db, xmlToImport)); 
+                Console.WriteLine(ImportCategoryProducts(db, xmlToImport)); 
             }
         }
 
@@ -78,6 +79,34 @@ namespace ProductShop
             }
 
             int count=context.SaveChanges();
+
+            return $"Successfully imported {count}";
+        }
+        public static string ImportCategoryProducts(ProductShopContext context, string inputXml)
+        {
+            var xmlSerializer =
+                new XmlSerializer(typeof(ImportCategoryProductDto[]),
+                new XmlRootAttribute("CategoryProducts"));
+            var categoryProductsDto =
+                ((ImportCategoryProductDto[])xmlSerializer.Deserialize(new StringReader(inputXml)))
+                .ToList();
+
+            List<CategoryProduct> categoryProducts = new List<CategoryProduct>();
+
+            foreach (var categoryProductDto in categoryProductsDto)
+            {
+                var targetProduct = context.Products.Find(categoryProductDto.ProductId);
+                var targetCategory = context.Categories.Find(categoryProductDto.CategoryId);
+
+                if (targetProduct != null && targetCategory != null)
+                {
+                    var category = Mapper.Map<CategoryProduct>(categoryProductDto);
+                    categoryProducts.Add(category);
+                }
+            }
+
+            context.CategoryProducts.AddRange(categoryProducts);
+            int count = context.SaveChanges();
 
             return $"Successfully imported {count}";
         }
