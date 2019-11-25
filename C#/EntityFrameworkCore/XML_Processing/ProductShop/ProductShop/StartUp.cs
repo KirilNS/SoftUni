@@ -1,7 +1,9 @@
-﻿using ProductShop.Data;
+﻿using AutoMapper;
+using ProductShop.Data;
 using ProductShop.Dtos.Import;
 using ProductShop.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -11,11 +13,16 @@ namespace ProductShop
     {
         public static void Main(string[] args)
         {
+            Mapper.Initialize(x =>
+            {
+                x.AddProfile<ProductShopProfile>();
+            });
+
             using (var db = new ProductShopContext())
             {
-                var xmlToImport = File.ReadAllText($"../../../Datasets/users.xml");
+                var xmlToImport = File.ReadAllText($"../../../Datasets/products.xml");
 
-                Console.WriteLine(ImportUsers(db, xmlToImport)); 
+                Console.WriteLine(ImportProducts(db, xmlToImport)); 
             }
         }
 
@@ -43,7 +50,20 @@ namespace ProductShop
         }
         public static string ImportProducts(ProductShopContext context, string inputXml)
         {
+            XmlSerializer serializer = new XmlSerializer(typeof(ImportProductDto[]), new XmlRootAttribute("Products"));
 
+            var products = (ImportProductDto[])serializer.Deserialize(new StringReader(inputXml));
+
+
+            foreach (var pro in products)
+            {
+                var product = Mapper.Map<Product>(pro);
+
+                context.Add(product);
+            }
+            int result = context.SaveChanges();
+
+            return $"Successfully imported {result}";
         }
     }
 }
