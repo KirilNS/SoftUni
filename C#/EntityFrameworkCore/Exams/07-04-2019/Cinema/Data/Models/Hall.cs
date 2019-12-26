@@ -20,7 +20,7 @@ namespace Cinema.Data.Models
         }
         public int Id { get; set; }
         [Required]
-        [Range(3,20)]
+        [MinLength(3),MaxLength(20)]
         public string Name { get; set; }
         public bool Is4Dx { get; set; }
         public bool Is3D { get; set; }

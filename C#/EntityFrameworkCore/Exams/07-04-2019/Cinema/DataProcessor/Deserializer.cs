@@ -1,8 +1,9 @@
 ﻿namespace Cinema.DataProcessor
 {
     using System;
-
+    using Cinema.DataProcessor.ImportDto;
     using Data;
+    using Newtonsoft.Json;
 
     public class Deserializer
     {

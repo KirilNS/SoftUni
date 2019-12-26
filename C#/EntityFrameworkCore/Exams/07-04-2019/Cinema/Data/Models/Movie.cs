@@ -20,16 +20,16 @@ namespace Cinema.Data.Models
         }
         public int Id { get; set; }
         [Required]
-        [Range(3,20)]
+        [MinLength(3),MaxLength(20)]
         public string Title { get; set; }
         [Required]
         public Genre Genre { get; set; }
         [Required]
         public TimeSpan Duration { get; set; }
-        [Range(typeof(double),"1.0","10.00")]
+        [Range(1.0,10.0)]
         public double Rating { get; set; }
         [Required]
-        [Range(3,20)]
+        [MinLength(3), MaxLength(20)]
         public string Director { get; set; }
 
         public ICollection<Projection> Projections { get; set; }

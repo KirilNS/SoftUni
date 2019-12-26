@@ -19,12 +19,12 @@ namespace Cinema.Data.Models
         }
         public int Id { get; set; }
         [Required]
-        [Range(3,20)]
+        [MinLength(3),MaxLength(20)]
         public string FirstName { get; set; }
         [Required]
         [Range(3, 20)]
         public string LastName { get; set; }
-        [Range(typeof(int),"12","110")]
+        [Range(12,110)]
         public int Age { get; set; }
         [Range(typeof(decimal),"0.01", "79228162514264337593543950335")]
         public decimal Balance { get; set; }
