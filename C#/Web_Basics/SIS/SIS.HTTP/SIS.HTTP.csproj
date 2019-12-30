@@ -5,9 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Exceptions\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Headers\" />
     <Folder Include="Responses\" />
     <Folder Include="Requests\" />
   </ItemGroup>
