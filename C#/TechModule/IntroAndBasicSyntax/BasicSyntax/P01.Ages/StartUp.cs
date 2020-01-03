@@ -4,11 +4,11 @@ namespace P01.Ages
 {
     public class StartUp
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            int age = int.Parse(Console.ReadLine());
+            var age = int.Parse(Console.ReadLine());
 
-            string person = String.Empty;
+            string person;
 
             if (age <= 2)
             {
