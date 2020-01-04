@@ -18,5 +18,7 @@ namespace P08.TriangleOfNumbers
                 Console.WriteLine();
             }
         }
+
+       
     }
 }
